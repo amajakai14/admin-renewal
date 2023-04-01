@@ -1,0 +1,46 @@
+version: '3'
+
+tasks:
+  build:
+    cmds:
+      - go build -o app cmd/server/main.go
+
+  test:
+    cmds:
+      - docker-compose up -d --build
+      - go test -v ./...
+      - go test -tags=e2e -v ./...
+      - go test -tags=integration -v ./...
+    env:
+      DB_USERNAME: restaurant
+      DB_PASSWORD: restaurant
+      DB_HOST: localhost
+      DB_PORT: 5432
+      DB_DB: restaurant 
+      SSL_MODE: disable
+
+  lint:
+    cmds:
+      - golangci-lint run
+
+  run:
+    cmds:
+      - docker-compose up --build
+
+  integration-test:
+    cmds:
+      - docker-compose up -d db
+      - go test -tags=integration -v ./...
+    env:
+      DB_USERNAME: restaurant
+      DB_PASSWORD: restaurant
+      DB_HOST: localhost
+      DB_PORT: 5432
+      DB_DB: restaurant 
+      SSL_MODE: disable
+
+  e2e-test:
+    cmds:
+      - docker-compose up -d --build
+      - go test -tags=e2e -v ./...
+
