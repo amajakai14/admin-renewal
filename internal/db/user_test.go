@@ -8,8 +8,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestCommentDatabase(t *testing.T) {
-	t.Run("test create comment", func(t *testing.T) {
+func TestUserDatabase(t *testing.T) {
+	t.Run("test CRUD user", func(t *testing.T) {
 		db, err := NewDatabase()
 		assert.NoError(t, err)
 
@@ -33,8 +33,6 @@ func TestCommentDatabase(t *testing.T) {
 		assert.Equal(t, user.HashedPassword, newUser.HashedPassword)
 		assert.Equal(t, user.Role, newUser.Role)
 		assert.Equal(t, user.CorporationId, newUser.CorporationId)
-
-
 
 		updateUser:= &appUser.User{
 			ID: user.ID,
