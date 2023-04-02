@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	appUser "github.com/amajakai14/admin-renewal/internal/user"
 	"github.com/gin-gonic/gin"
 )
 
@@ -14,7 +15,7 @@ type Handler struct {
 }
 
 type Services struct {
-	UserService UserService
+	UserService *appUser.Service
 }
 
 func NewHandler(services Services) *Handler {
@@ -40,10 +41,8 @@ func (h *Handler) mapRoutes() {
 }
 
 func (h *Handler) Serve() error {
-	go func() {
-		if err := h.Server.ListenAndServe(); err != nil {
-			fmt.Println(err)
-		}
-	}()
+	if err := h.Server.ListenAndServe(); err != nil {
+		fmt.Println(err)
+	}
 	return nil
 }

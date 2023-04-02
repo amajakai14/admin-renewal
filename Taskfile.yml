@@ -39,7 +39,7 @@ tasks:
       DB_DB: restaurant 
       SSL_MODE: disable
 
-  e2e-test:
+  e2e:
     cmds:
       - docker-compose up -d --build
       - go test -tags=e2e -v ./...

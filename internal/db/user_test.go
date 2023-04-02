@@ -13,7 +13,7 @@ func TestUserDatabase(t *testing.T) {
 		db, err := NewDatabase()
 		assert.NoError(t, err)
 
-		user := &appUser.User{
+		user := appUser.User{
 			Name:"means",
 			Email:"means@example.com",
 			HashedPassword: "hashedpassword",
@@ -21,21 +21,21 @@ func TestUserDatabase(t *testing.T) {
 			CorporationId: "test-corporation",
 		}
 
-		err = db.PostUser(context.Background(), user)
-		assert.NotEqual(t, 0, user.ID)
+		createdUser, err := db.PostUser(context.Background(), user)
 		assert.NoError(t, err)
+		assert.NotEqual(t, 0, createdUser.ID) 
 
-		newUser, err := db.GetUser(context.Background(), user.ID)
+		newUser, err := db.GetUser(context.Background(), createdUser.ID)
 		assert.NoError(t, err)
-		assert.Equal(t, user.ID, newUser.ID)
-		assert.Equal(t, user.Name, newUser.Name)
-		assert.Equal(t, user.Email, newUser.Email)
-		assert.Equal(t, user.HashedPassword, newUser.HashedPassword)
-		assert.Equal(t, user.Role, newUser.Role)
-		assert.Equal(t, user.CorporationId, newUser.CorporationId)
+		assert.Equal(t, createdUser.ID, newUser.ID)
+		assert.Equal(t, createdUser.Name, newUser.Name)
+		assert.Equal(t, createdUser.Email, newUser.Email)
+		assert.Equal(t, createdUser.HashedPassword, newUser.HashedPassword)
+		assert.Equal(t, createdUser.Role, newUser.Role)
+		assert.Equal(t, createdUser.CorporationId, newUser.CorporationId)
 
-		updateUser:= &appUser.User{
-			ID: user.ID,
+		updateUser := appUser.User{
+			ID: createdUser.ID,
 			Name:"new means",
 			Email:"means@example.com",
 			HashedPassword: "hashedpassword",
@@ -45,7 +45,7 @@ func TestUserDatabase(t *testing.T) {
 		err = db.UpdateUser(context.Background(), updateUser)
 		assert.NoError(t, err)
 
-		newUser, err = db.GetUser(context.Background(), user.ID)
+		newUser, err = db.GetUser(context.Background(), createdUser.ID)
 		assert.NoError(t, err)
 		assert.Equal(t, updateUser.ID, newUser.ID)
 		assert.Equal(t, updateUser.Name, newUser.Name)
@@ -54,10 +54,10 @@ func TestUserDatabase(t *testing.T) {
 		assert.Equal(t, updateUser.Role, newUser.Role)
 		assert.Equal(t, updateUser.CorporationId, newUser.CorporationId)
 
-		err = db.DeleteUser(context.Background(), user.ID)
+		err = db.DeleteUser(context.Background(), createdUser.ID)
 		assert.NoError(t, err)
 
-		_, err = db.GetUser(context.Background(), user.ID)
+		_, err = db.GetUser(context.Background(), createdUser.ID)
 		assert.Error(t, err)
 	})
 }

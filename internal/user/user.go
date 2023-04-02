@@ -17,10 +17,10 @@ type User struct {
 }
 
 type Store interface {
-	PostUser(ctx context.Context, user User) (User, error) 
-	GetUser(ctx context.Context, id string) (User, error)
-	UpdateUser(ctx context.Context, user User, id string) (User, error)
-	DeleteUser(ctx context.Context, id string) error
+	PostUser(ctx context.Context, user User) (User, error)
+	GetUser(ctx context.Context, id int) (User, error)
+	UpdateUser(ctx context.Context, user User) error
+	DeleteUser(ctx context.Context, id int) error
 }
 
 type Service struct {
@@ -35,14 +35,14 @@ func (s *Service) PostUser(ctx context.Context,user User) (User, error) {
 	return s.Store.PostUser(ctx, user)
 }
 
-func (s *Service) GetUser(ctx context.Context, id string) (User, error) {
+func (s *Service) GetUser(ctx context.Context, id int) (User, error) {
 	return s.Store.GetUser(ctx, id)
 }
 
-func (s *Service) UpdateUser(ctx context.Context,user User, id string) (User, error) {
-	return s.Store.UpdateUser(ctx, user, id)
+func (s *Service) UpdateUser(ctx context.Context,user User)  error {
+	return s.Store.UpdateUser(ctx, user)
 }
 
-func (s *Service) DeleteUser(ctx context.Context, id string) error {
+func (s *Service) DeleteUser(ctx context.Context, id int) error {
 	return s.Store.DeleteUser(ctx, id)
 }

@@ -18,9 +18,8 @@ type UserRow struct {
 	CorporationId string    `db:"corporation_id"`
 }
 
-func (d *Database) PostUser(ctx context.Context, user *appUser.User) error {
-	var userRow UserRow
-	userRow = UserRow{
+func (d *Database) PostUser(ctx context.Context, user appUser.User) (appUser.User, error) {
+	userRow := UserRow{
 		Name:          user.Name,
 		Email:         user.Email,
 		Password:      user.HashedPassword,
@@ -39,18 +38,18 @@ func (d *Database) PostUser(ctx context.Context, user *appUser.User) error {
 		userRow,
 	)
 	if err != nil {
-		return err
+		return appUser.User{}, err
 	}
 	if rows.Next() {
 		rows.Scan(&user.ID)
 	}
 	if err := rows.Close(); err != nil {
-		return err
+		return appUser.User{}, err
 	}
-	return nil
+	return user, nil
 }
 
-func (d *Database) GetUser(ctx context.Context, id int) (*appUser.User, error) {
+func (d *Database) GetUser(ctx context.Context, id int) (appUser.User, error) {
 	var userRow UserRow
 	row := d.Client.QueryRowContext(
 		ctx,
@@ -67,13 +66,13 @@ func (d *Database) GetUser(ctx context.Context, id int) (*appUser.User, error) {
 		&userRow.CreatedAt,
 		&userRow.CorporationId,
 	); err != nil {
-		return nil, err
+		return appUser.User{}, err
 	}
 	return toUser(userRow), nil
 }
 
-func toUser(userRow UserRow) *appUser.User {
-	return &appUser.User{
+func toUser(userRow UserRow) appUser.User {
+	return appUser.User{
 		ID:             userRow.ID,
 		Name:           userRow.Name,
 		Email:          userRow.Email,
@@ -85,7 +84,7 @@ func toUser(userRow UserRow) *appUser.User {
 	}
 }
 
-func (d *Database) UpdateUser(ctx context.Context, user *appUser.User) error {
+func (d *Database) UpdateUser(ctx context.Context, user appUser.User) error {
 	userRow := UserRow{
 		ID:            user.ID,
 		Name:          user.Name,

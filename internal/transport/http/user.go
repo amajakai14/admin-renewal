@@ -12,10 +12,10 @@ import (
 )
 
 type UserService interface {
-	PostUser(ctx context.Context, user appUser.User) (appUser.User, error)
-	GetUser(ctx context.Context, id string) (appUser.User, error)
-	UpdateUser(ctx context.Context, user appUser.User, id string) (appUser.User, error)
-	DeleteUser(ctx context.Context, id string) error
+	PostUser(ctx context.Context, user *appUser.User) error
+	GetUser(ctx context.Context, id int) (*appUser.User, error)
+	UpdateUser(ctx context.Context, user *appUser.User) error
+	DeleteUser(ctx context.Context, id int) error
 }
 
 type PostUserRequest struct {

@@ -1,13 +1,3 @@
-CREATE TABLE IF NOT EXISTS cart (
-    id SERIAL NOT NULL,
-    channel_id TEXT NOT NULL,
-    user_id TEXT NOT NULL,
-    menu_id INTEGER NOT NULL,
-    amount INTEGER NOT NULL,
-
-    CONSTRAINT cart_pkey PRIMARY KEY (id)
-);
-
 -- CreateTable
 CREATE TABLE IF NOT EXISTS channel (
     id TEXT NOT NULL,
@@ -100,15 +90,6 @@ CREATE UNIQUE INDEX channel_id_key ON channel(id);
 
 -- AddForeignKey
 ALTER TABLE app_user ADD CONSTRAINT user_corporation_id_fkey FOREIGN KEY (corporation_id) REFERENCES corporation(id) ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE cart ADD CONSTRAINT cart_channel_id_fkey FOREIGN KEY (channel_id) REFERENCES channel(id) ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE cart ADD CONSTRAINT cart_menu_id_fkey FOREIGN KEY (menu_id) REFERENCES menu(id) ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE cart ADD CONSTRAINT cart_user_id_fkey FOREIGN KEY (user_id) REFERENCES app_user(id) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE channel ADD CONSTRAINT channel_course_id_fkey FOREIGN KEY (course_id) REFERENCES course(id) ON DELETE CASCADE ON UPDATE CASCADE;

@@ -38,6 +38,7 @@ require (
 require (
 	github.com/gin-gonic/gin v1.9.0
 	github.com/go-playground/validator v9.31.0+incompatible
+	github.com/go-resty/resty/v2 v2.7.0
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/stretchr/testify v1.8.2
