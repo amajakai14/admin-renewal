@@ -1,11 +1,9 @@
 CREATE TABLE IF NOT EXISTS app_user (
-    id TEXT NOT NULL,
+    id SERIAL NOT NULL,
     name TEXT,
     email TEXT,
     password TEXT,
-	salt TEXT,
-    email_verified TIMESTAMP(3),
-    image TEXT,
+    email_verified BOOLEAN,
     role TEXT,
     created_at TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     corporation_id TEXT,
