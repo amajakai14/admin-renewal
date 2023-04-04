@@ -2,10 +2,12 @@ package http
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"strings"
 	"time"
 
+	appUser "github.com/amajakai14/admin-renewal/internal/user"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
 )
@@ -39,12 +41,27 @@ func AuthMiddleware() gin.HandlerFunc {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "claim not found"})
 			return
 		}
-		corporationId, ok := claims["corporationId"].(string)
+		userId, ok := claims["userId"]
+		if !ok {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "user_id not found"})
+			return
+		}
+
+		corporationId, ok := claims["corporationId"]
 		if !ok {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "corporation_id not found"})
 			return
 		}
+		role, ok := claims["role"]
+		if !ok {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "role not found"})
+			return
+		}
+		fmt.Println(userId, corporationId, role)
+		c.Set("userId", userId)
 		c.Set("corporationId", corporationId)
+		c.Set("role", role)
+		c.Next()
 	}
 }
 
@@ -66,9 +83,11 @@ func extractToken(accessToken string) (*jwt.Token, error) {
 	return token, nil
 }
 
-func Generate(corporationID string) (string, error) {
+func Generate(user *appUser.User) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"corporationId": corporationID,
+		"userId":        user.ID,
+		"corporationId": user.CorporationId,
+		"role":          user.Role,
 		"iat":           time.Now().Unix(),
 		"exp":           time.Now().Add(time.Hour * 24).Unix(),
 	})

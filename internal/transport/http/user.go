@@ -59,7 +59,7 @@ func (h *Handler) SignIn(c *gin.Context) {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
-	token, err := Generate(user.CorporationId)
+	token, err := Generate(&user)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -111,7 +111,41 @@ func toUser(userRequest PostUserRequest) (appUser.User, error) {
 	}, nil
 }
 
+type UserResponse struct {
+	ID            int    `json:"id"`
+	Name          string `json:"name"`
+	Email         string `json:"email"`
+	Role          string `json:"role"`
+	CorporationId string `json:"corporation_id"`
+}
+
 func (h *Handler) GetUser(c *gin.Context) {
+	userID, exist := c.Get("userId")
+	if exist == false {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "user id not found",
+		})
+		return
+	}
+	id := int(userID.(float64))
+	user, err := h.Services.UserService.GetUserByID(c.Request.Context(), id)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, toUserResponse(&user))
+}
+
+func toUserResponse(user *appUser.User) UserResponse {
+	return UserResponse{
+		ID:            user.ID,
+		Name:          user.Name,
+		Email:         user.Email,
+		Role:          user.Role,
+		CorporationId: user.CorporationId,
+	}
 }
 
 func (h *Handler) UpdateUser(c *gin.Context) {
