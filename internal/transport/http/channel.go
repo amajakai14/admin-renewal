@@ -8,9 +8,8 @@ import (
 	"github.com/go-playground/validator"
 )
 
-
 type PostChannelRequest struct {
-	TableID int `json:"table_id" validate:"required"`
+	TableID  int `json:"table_id" validate:"required"`
 	CourseID int `json:"course_id" validate:"required"`
 }
 
@@ -33,4 +32,3 @@ func (h *Handler) PostChannel(c *gin.Context) {
 	}
 	//TODO add service h.Services.ChannelService.PostChannel(c, channelRequest)
 }
-

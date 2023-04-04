@@ -1,0 +1,3 @@
+package course
+
+func todo() {}
