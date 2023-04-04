@@ -40,7 +40,7 @@ func (h *Handler) mapRoutes() {
 		fmt.Fprint(c.Writer, "pong")
 	})
 	h.Router.POST("api/v1/users", h.PostUser)
-	h.Router.POST("api/v1/users/signin", AuthMiddleware(),h.SignIn)
+	h.Router.POST("api/v1/users/signin", h.SignIn)
 }
 
 func (h *Handler) Serve() error {

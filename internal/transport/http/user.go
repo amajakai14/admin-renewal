@@ -22,7 +22,7 @@ type PostUserRequest struct {
 	Name          string `json:"name"`
 	Email         string `json:"email" validate:"required,email"`
 	Password      string `json:"password" validate:"required,min=8"`
-	Role          string `json:"role" validate:"required, oneof=admin staff"`
+	Role          string `json:"role" validate:"required,oneof=admin staff"`
 	CorporationId string `json:"corporation_id"`
 }
 
@@ -68,8 +68,6 @@ func (h *Handler) SignIn(c *gin.Context) {
 		"token": token,
 	})
 }
-
-
 
 func (h *Handler) PostUser(c *gin.Context) {
 	r := c.Request

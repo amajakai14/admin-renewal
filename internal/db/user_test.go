@@ -25,7 +25,7 @@ func TestUserDatabase(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NotEqual(t, 0, createdUser.ID) 
 
-		newUser, err := db.GetUser(context.Background(), createdUser.ID)
+		newUser, err := db.GetUserByID(context.Background(), createdUser.ID)
 		assert.NoError(t, err)
 		assert.Equal(t, createdUser.ID, newUser.ID)
 		assert.Equal(t, createdUser.Name, newUser.Name)
@@ -45,7 +45,7 @@ func TestUserDatabase(t *testing.T) {
 		err = db.UpdateUser(context.Background(), updateUser)
 		assert.NoError(t, err)
 
-		newUser, err = db.GetUser(context.Background(), createdUser.ID)
+		newUser, err = db.GetUserByID(context.Background(), createdUser.ID)
 		assert.NoError(t, err)
 		assert.Equal(t, updateUser.ID, newUser.ID)
 		assert.Equal(t, updateUser.Name, newUser.Name)
@@ -57,7 +57,7 @@ func TestUserDatabase(t *testing.T) {
 		err = db.DeleteUser(context.Background(), createdUser.ID)
 		assert.NoError(t, err)
 
-		_, err = db.GetUser(context.Background(), createdUser.ID)
+		_, err = db.GetUserByID(context.Background(), createdUser.ID)
 		assert.Error(t, err)
 	})
 }
