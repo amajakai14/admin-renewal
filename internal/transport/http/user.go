@@ -26,6 +26,51 @@ type PostUserRequest struct {
 	CorporationId string `json:"corporation_id"`
 }
 
+type SignInRequest struct {
+	Email    string `json:"email" validate:"required,email"`
+	Password string `json:"password" validate:"required,min=8"`
+}
+
+func (h *Handler) SignIn(c *gin.Context) {
+	r := c.Request
+	w := c.Writer
+	var signInRequest SignInRequest 
+
+	if err := json.NewDecoder(r.Body).Decode(&signInRequest); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(err.Error()))
+		return
+	}
+
+	validate := validator.New()
+	err := validate.Struct(signInRequest)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(err.Error()))
+		return
+	}
+	user, err := h.Services.UserService.GetUserByEmail(r.Context(), signInRequest.Email)
+	if err != nil {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	match := utils.MatchPassword(signInRequest.Password, user.HashedPassword)
+	if !match {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	token, err := Generate(user.CorporationId)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"token": token,
+	})
+}
+
+
+
 func (h *Handler) PostUser(c *gin.Context) {
 	r := c.Request
 	w := c.Writer

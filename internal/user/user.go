@@ -18,7 +18,8 @@ type User struct {
 
 type Store interface {
 	PostUser(ctx context.Context, user User) (User, error)
-	GetUser(ctx context.Context, id int) (User, error)
+	GetUserByID(ctx context.Context, id int) (User, error)
+	GetUserByEmail(ctx context.Context, email string) (User, error)
 	UpdateUser(ctx context.Context, user User) error
 	DeleteUser(ctx context.Context, id int) error
 }
@@ -35,8 +36,12 @@ func (s *Service) PostUser(ctx context.Context,user User) (User, error) {
 	return s.Store.PostUser(ctx, user)
 }
 
-func (s *Service) GetUser(ctx context.Context, id int) (User, error) {
-	return s.Store.GetUser(ctx, id)
+func (s *Service) GetUserByID(ctx context.Context, id int) (User, error) {
+	return s.Store.GetUserByID(ctx, id)
+}
+
+func (s *Service) GetUserByEmail(ctx context.Context, email string) (User, error) {
+	return s.Store.GetUserByEmail(ctx, email)
 }
 
 func (s *Service) UpdateUser(ctx context.Context,user User)  error {

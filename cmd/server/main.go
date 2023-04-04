@@ -3,9 +3,10 @@ package main
 import (
 	"fmt"
 
+	"github.com/amajakai14/admin-renewal/internal/channel"
 	"github.com/amajakai14/admin-renewal/internal/db"
-	appUser "github.com/amajakai14/admin-renewal/internal/user"
 	httpTransport "github.com/amajakai14/admin-renewal/internal/transport/http"
+	appUser "github.com/amajakai14/admin-renewal/internal/user"
 )
 
 func Run() error {
@@ -19,15 +20,23 @@ func Run() error {
 		return err
 	}
 
-	userService := appUser.NewService(db)
-	services := httpTransport.Services{UserService: userService}
-
+	services := initializeServices(db)
 	httpHandler := httpTransport.NewHandler(services)
 	if err := httpHandler.Serve(); err != nil {
 		return err
 	}
 	
 	return nil
+}
+
+func initializeServices(db *db.Database) httpTransport.Services {
+	userService := appUser.NewService(db)
+	channelService := channel.NewService(db)
+	services := httpTransport.Services{
+		UserService: userService,
+		ChannelService: channelService,
+	}
+	return services
 }
 
 func main() {

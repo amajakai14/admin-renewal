@@ -49,7 +49,29 @@ func (d *Database) PostUser(ctx context.Context, user appUser.User) (appUser.Use
 	return user, nil
 }
 
-func (d *Database) GetUser(ctx context.Context, id int) (appUser.User, error) {
+func (d *Database) GetUserByEmail(ctx context.Context, email string) (appUser.User, error) {
+	var userRow UserRow
+	row := d.Client.QueryRowContext(
+		ctx,
+		`SELECT * FROM app_user WHERE email = $1`,
+		email,
+	)
+	if err := row.Scan(
+		&userRow.ID,
+		&userRow.Name,
+		&userRow.Email,
+		&userRow.Password,
+		&userRow.EmailVerified,
+		&userRow.Role,
+		&userRow.CreatedAt,
+		&userRow.CorporationId,
+	); err != nil {
+		return appUser.User{}, err
+	}
+	return toUser(userRow), nil
+}
+
+func (d *Database) GetUserByID(ctx context.Context, id int) (appUser.User, error) {
 	var userRow UserRow
 	row := d.Client.QueryRowContext(
 		ctx,

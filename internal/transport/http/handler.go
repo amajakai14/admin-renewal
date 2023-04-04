@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	appUser "github.com/amajakai14/admin-renewal/internal/user"
+	channel "github.com/amajakai14/admin-renewal/internal/channel"
 	"github.com/gin-gonic/gin"
 )
 
@@ -16,6 +17,7 @@ type Handler struct {
 
 type Services struct {
 	UserService *appUser.Service
+	ChannelService  *channel.Service
 }
 
 func NewHandler(services Services) *Handler {
@@ -38,6 +40,7 @@ func (h *Handler) mapRoutes() {
 		fmt.Fprint(c.Writer, "pong")
 	})
 	h.Router.POST("api/v1/users", h.PostUser)
+	h.Router.POST("api/v1/users/signin", AuthMiddleware(),h.SignIn)
 }
 
 func (h *Handler) Serve() error {
