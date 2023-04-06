@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"net/http"
 
-	appUser "github.com/amajakai14/admin-renewal/internal/user"
 	channel "github.com/amajakai14/admin-renewal/internal/channel"
+	"github.com/amajakai14/admin-renewal/internal/course"
+	"github.com/amajakai14/admin-renewal/internal/menu"
+	appUser "github.com/amajakai14/admin-renewal/internal/user"
 	"github.com/gin-gonic/gin"
 )
 
@@ -18,6 +20,8 @@ type Handler struct {
 type Services struct {
 	UserService *appUser.Service
 	ChannelService  *channel.Service
+	MenuService *menu.Service
+	CourseService *course.Service
 }
 
 func NewHandler(services Services) *Handler {
@@ -42,6 +46,7 @@ func (h *Handler) mapRoutes() {
 	h.Router.POST("api/v1/users", h.PostUser)
 	h.Router.GET("api/v1/me", AuthMiddleware(),h.GetUser)
 	h.Router.POST("api/v1/users/signin", h.SignIn)
+	h.Router.POST("api/v1/image", h.UploadMenuImage)
 }
 
 func (h *Handler) Serve() error {

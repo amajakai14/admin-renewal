@@ -1,7 +1,6 @@
 package http
 
 import (
-	"context"
 	"encoding/json"
 	"net/http"
 
@@ -11,18 +10,11 @@ import (
 	"github.com/go-playground/validator"
 )
 
-type UserService interface {
-	PostUser(ctx context.Context, user *appUser.User) error
-	GetUser(ctx context.Context, id int) (*appUser.User, error)
-	UpdateUser(ctx context.Context, user *appUser.User) error
-	DeleteUser(ctx context.Context, id int) error
-}
-
 type PostUserRequest struct {
 	Name          string `json:"name"`
 	Email         string `json:"email" validate:"required,email"`
 	Password      string `json:"password" validate:"required,min=8"`
-	Role          string `json:"role" validate:"required,oneof=admin staff"`
+	Role          string `json:"role" validate:"required, oneof=admin staff"`
 	CorporationId string `json:"corporation_id"`
 }
 
@@ -111,41 +103,7 @@ func toUser(userRequest PostUserRequest) (appUser.User, error) {
 	}, nil
 }
 
-type UserResponse struct {
-	ID            int    `json:"id"`
-	Name          string `json:"name"`
-	Email         string `json:"email"`
-	Role          string `json:"role"`
-	CorporationId string `json:"corporation_id"`
-}
-
 func (h *Handler) GetUser(c *gin.Context) {
-	userID, exist := c.Get("userId")
-	if exist == false {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "user id not found",
-		})
-		return
-	}
-	id := int(userID.(float64))
-	user, err := h.Services.UserService.GetUserByID(c.Request.Context(), id)
-	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{
-			"error": err.Error(),
-		})
-		return
-	}
-	c.JSON(http.StatusOK, toUserResponse(&user))
-}
-
-func toUserResponse(user *appUser.User) UserResponse {
-	return UserResponse{
-		ID:            user.ID,
-		Name:          user.Name,
-		Email:         user.Email,
-		Role:          user.Role,
-		CorporationId: user.CorporationId,
-	}
 }
 
 func (h *Handler) UpdateUser(c *gin.Context) {

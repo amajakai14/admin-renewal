@@ -8,7 +8,7 @@ import (
 )
 
 type UserRow struct {
-	ID            int
+	ID            int 
 	Name          string
 	Email         string
 	Password      string
@@ -51,20 +51,11 @@ func (d *Database) PostUser(ctx context.Context, user appUser.User) (appUser.Use
 
 func (d *Database) GetUserByEmail(ctx context.Context, email string) (appUser.User, error) {
 	var userRow UserRow
-	row := d.Client.QueryRowContext(
+	if err := d.Client.GetContext(
 		ctx,
-		`SELECT * FROM app_user WHERE email = $1`,
+		&userRow,
+		`SELECT * FROM app_user WHERE email = $1 LIMIT 1`,
 		email,
-	)
-	if err := row.Scan(
-		&userRow.ID,
-		&userRow.Name,
-		&userRow.Email,
-		&userRow.Password,
-		&userRow.EmailVerified,
-		&userRow.Role,
-		&userRow.CreatedAt,
-		&userRow.CorporationId,
 	); err != nil {
 		return appUser.User{}, err
 	}
@@ -73,23 +64,15 @@ func (d *Database) GetUserByEmail(ctx context.Context, email string) (appUser.Us
 
 func (d *Database) GetUserByID(ctx context.Context, id int) (appUser.User, error) {
 	var userRow UserRow
-	row := d.Client.QueryRowContext(
+	if err := d.Client.GetContext(
 		ctx,
-		`SELECT * FROM app_user WHERE id = $1`,
+		&userRow,
+		`SELECT * FROM app_user WHERE id = $1 LIMIT 1`,
 		id,
-	)
-	if err := row.Scan(
-		&userRow.ID,
-		&userRow.Name,
-		&userRow.Email,
-		&userRow.Password,
-		&userRow.EmailVerified,
-		&userRow.Role,
-		&userRow.CreatedAt,
-		&userRow.CorporationId,
 	); err != nil {
 		return appUser.User{}, err
 	}
+
 	return toUser(userRow), nil
 }
 
@@ -135,7 +118,7 @@ func (d *Database) UpdateUser(ctx context.Context, user appUser.User) error {
 	return nil
 }
 
-func (d * Database) DeleteUser(ctx context.Context, id int) error {
+func (d *Database) DeleteUser(ctx context.Context, id int) error {
 	if _, err := d.Client.ExecContext(
 		ctx,
 		`DELETE FROM app_user WHERE id = $1`,
