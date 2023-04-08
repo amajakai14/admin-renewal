@@ -7,7 +7,7 @@ type Course struct {
 	CourseName      string
 	CoursePrice     int
 	CourseTimeLimit int
-	CoursePriority  int
+	CoursePriority  uint32
 	CorporationID   string
 }
 
@@ -18,7 +18,7 @@ const (
 type Store interface {
 	PostCourse(context.Context, Course) (Course, error)
 	GetCourse(context.Context, int) (Course, error)
-	GetCourses(context.Context) ([]Course, error)
+	GetCourses(context.Context, string) ([]Course, error)
 	UpdateCourse(context.Context, Course) error
 	DeleteCourse(context.Context, int) error
 }
@@ -41,8 +41,8 @@ func (s *Service) GetCourse(ctx context.Context, id int) (Course, error) {
 	return s.Store.GetCourse(ctx, id)
 }
 
-func (s *Service) GetCourses(ctx context.Context) ([]Course, error) {
-	return s.Store.GetCourses(ctx)
+func (s *Service) GetCourses(ctx context.Context, corporationId string) ([]Course, error) {
+	return s.Store.GetCourses(ctx, corporationId)
 }
 
 func (s *Service) UpdateCourse(ctx context.Context, c Course) error {

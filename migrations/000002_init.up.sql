@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS  menu (
     menu_type TEXT NOT NULL,
     price INTEGER NOT NULL DEFAULT 0,
     available BOOLEAN NOT NULL DEFAULT true,
-    hasImage BOOLEAN NOT NULL DEFAULT false,
+    has_image BOOLEAN NOT NULL DEFAULT false,
     created_at TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP(3),
     corporation_id TEXT NOT NULL,

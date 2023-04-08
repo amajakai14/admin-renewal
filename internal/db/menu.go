@@ -22,9 +22,20 @@ type MenuRow struct {
 }
 
 func (d *Database) PostMenu(ctx context.Context, m menu.Menu) (menu.Menu, error) {
+	menuRow := MenuRow{
+		ID:            0,
+		MenuType:      string(m.MenuType),
+		Price:         m.Price,
+		Available:     m.Available,
+		HasImage:      m.HasImage,
+		CorporationID: m.CorporationID,
+		MenuNameEN:    toNullString(m.MenuNameEN),
+		MenuNameTH:    toNullString(m.MenuNameTH),
+		Priority:      toNullInt32(m.Priority),
+	}
 	rows, err := d.Client.NamedQueryContext(
 		ctx,
-		`INSERT INTO menus
+		`INSERT INTO menu
 		(menu_type, price, available, has_image, corporation_id, menu_name_en, 
 		menu_name_th, priority)
 		VALUES
@@ -32,7 +43,7 @@ func (d *Database) PostMenu(ctx context.Context, m menu.Menu) (menu.Menu, error)
 		:menu_name_en,:menu_name_th,:priority)
 		RETURNING id
 		`,
-		m,
+		menuRow,
 	)
 	if err != nil {
 		return menu.Menu{}, err
@@ -46,12 +57,12 @@ func (d *Database) PostMenu(ctx context.Context, m menu.Menu) (menu.Menu, error)
 	return m, nil
 }
 
-func (d *Database) GetMenu(ctx context.Context, id int) (menu.Menu, error) {
+func (d *Database) GetMenu(ctx context.Context, id uint32) (menu.Menu, error) {
 	var menuRow MenuRow
 	if err := d.Client.GetContext(
 		ctx,
 		&menuRow,
-		"SELECT * FROM menus WHERE id = ?",
+		"SELECT * FROM menu WHERE id = $1 LIMIT 1 ",
 		id,
 	); err != nil {
 		return menu.Menu{}, err
@@ -76,16 +87,30 @@ func (d *Database) GetMenus(ctx context.Context) ([]menu.Menu, error) {
 }
 
 func (d *Database) UpdateMenu(ctx context.Context, m menu.Menu) error {
-	_, err := d.Client.NamedExecContext(
+	menuRow := MenuRow{
+		ID:            m.ID,
+		MenuType:      string(m.MenuType),
+		Price:         m.Price,
+		Available:     m.Available,
+		HasImage:      m.HasImage,
+		CorporationID: m.CorporationID,
+		MenuNameEN:    toNullString(m.MenuNameEN),
+		MenuNameTH:    toNullString(m.MenuNameTH),
+		Priority:      toNullInt32(m.Priority),
+	}
+	_, err := d.Client.NamedQueryContext(
 		ctx,
-		`UPDATE menus
-		SET menu_type = :menu_type, price = :price, available = :available, 
-		has_image = :has_image, corporation_id = :corporation_id, 
-		menu_name_en = :menu_name_en, menu_name_th = :menu_name_th, 
+		`UPDATE menu
+		SET menu_type = :menu_type, 
+		price = :price, 
+		available = :available, 
+		has_image = :has_image, 
+		menu_name_en = :menu_name_en, 
+		menu_name_th = :menu_name_th, 
 		priority = :priority
 		WHERE id = :id
 		`,
-		m,
+		menuRow,
 	)
 	if err != nil {
 		return err
@@ -93,10 +118,10 @@ func (d *Database) UpdateMenu(ctx context.Context, m menu.Menu) error {
 	return nil
 }
 
-func (d *Database) DeleteMenu(ctx context.Context, id int) error {
+func (d *Database) DeleteMenu(ctx context.Context, id uint32) error {
 	_, err := d.Client.ExecContext(
 		ctx,
-		"DELETE FROM menus WHERE id = ?",
+		"DELETE FROM menu WHERE id = $1",
 		id,
 	)
 	return err
@@ -136,4 +161,24 @@ func toUInt32(i sql.NullInt32) uint32 {
 		return uint32(i.Int32)
 	}
 	return 0
+}
+
+func toNullString(s string) sql.NullString {
+	if s == "" {
+		return sql.NullString{}
+	}
+	return sql.NullString{
+		String: s,
+		Valid:  true,
+	}
+}
+
+func toNullInt32(i uint32) sql.NullInt32 {
+	if i == 0 {
+		return sql.NullInt32{}
+	}
+	return sql.NullInt32{
+		Int32: int32(i),
+		Valid: true,
+	}
 }

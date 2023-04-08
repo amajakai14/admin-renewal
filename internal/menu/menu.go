@@ -26,10 +26,10 @@ const (
 
 type Store interface {
 	PostMenu(context.Context, Menu) (Menu, error)
-	GetMenu(context.Context, int) (Menu, error)
+	GetMenu(context.Context, uint32) (Menu, error)
 	GetMenus(context.Context) ([]Menu, error)
 	UpdateMenu(context.Context, Menu) error
-	DeleteMenu(context.Context, int) error
+	DeleteMenu(context.Context, uint32) error
 }
 
 type Service struct {
@@ -46,7 +46,7 @@ func (s *Service) PostMenu(ctx context.Context, m Menu) (Menu, error) {
 	return s.Store.PostMenu(ctx, m)
 }
 
-func (s *Service) GetMenu(ctx context.Context, id int) (Menu, error) {
+func (s *Service) GetMenu(ctx context.Context, id uint32) (Menu, error) {
 	return s.Store.GetMenu(ctx, id)
 }
 
@@ -58,7 +58,7 @@ func (s *Service) UpdateMenu(ctx context.Context, m Menu) error {
 	return s.Store.UpdateMenu(ctx, m)
 }
 
-func (s *Service) DeleteMenu(ctx context.Context, id int) error {
+func (s *Service) DeleteMenu(ctx context.Context, id uint32) error {
 	return s.Store.DeleteMenu(ctx, id)
 }
 
