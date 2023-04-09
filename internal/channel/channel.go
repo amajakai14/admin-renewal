@@ -19,8 +19,8 @@ type Channel struct {
 type Store interface {
 	PostChannel(context.Context, Channel) (Channel, error)
 	GetChannel(context.Context, string) (Channel, error)
-	UpdateChannel()
-	DeleteChannel()
+	UpdateChannel(context.Context, Channel) error
+	DeleteChannel(context.Context, string) error
 }
 
 type Service struct {
@@ -44,4 +44,12 @@ func (s *Service) PostChannel(ctx context.Context, channel Channel) (Channel, er
 
 func (s *Service) GetChannel(ctx context.Context, id string) (Channel, error) {
 	return s.Store.GetChannel(ctx, id)
+}
+
+func (s *Service) UpdateChannel(ctx context.Context, channel Channel) error {
+	return s.Store.UpdateChannel(ctx, channel)
+}
+
+func (s *Service) DeleteChannel(ctx context.Context, id string) error {
+	return s.Store.DeleteChannel(ctx, id)
 }
